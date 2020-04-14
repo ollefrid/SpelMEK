@@ -14,43 +14,79 @@ using UnityEngine;
 
 public class Controller : MonoBehaviour
 {
-    [SerializeField]
-    private LayerMask collisionLayer = new LayerMask();
-    [SerializeField]
-    private float acceleration = 2;
-    [SerializeField]
-    private float deceleration = 1;
-    [SerializeField]
-    private float maxSpeed = 3;
-    [SerializeField]
-    private float minimumSpeedCutoff = 0.1f;
-    [SerializeField]
-    private float gravityModifier = 1;
-    [SerializeField]
-    private float skinWidth = 0.03f;
-    [SerializeField]
-    private float groundCheckDistance = 0.1f;
-    [SerializeField]
-    private float jumpHeight = 4;
-    [SerializeField]
-    private float staticFriction = 0.45f;
-    [SerializeField]
-    private float dynamicFriction = 0.25f;
-    [SerializeField]
-    private float airResistance = 0.25f;
-    [SerializeField]
-    private float mouseSensitivity = 0.5f;
-    [SerializeField]
-    private float maximumCameraAngle = 90;
-    [SerializeField]
-    private float minimumCameraAngle = -90;
-    [SerializeField]
-    private Vector3 cameraOffset = new Vector3(0.0f, 0.0f, 0.0f);
-    [SerializeField]
-    private bool haveThirdPersonCameraActive = true;
+    [Header("Speed Settings")]
 
     [SerializeField]
+    [Tooltip("How fast this transform accelerates")]
+    private float acceleration = 2;
+    [SerializeField]
+    [Tooltip("How fast this transform decelerates")]
+    private float deceleration = 1;
+    [SerializeField]
+    [Tooltip("The maximum speed this transform can achieve")]
+    private float maxSpeed = 3;
+    [SerializeField]
+    [Tooltip("The lowest possible speed this transform can achieve before it gets set to zero")]
+    private float minimumSpeedCutoff = 0.1f;
+
+    [Header("Friction Settings")]
+
+    [SerializeField]
+    [Tooltip("Weird friction 1")]           //TODO: Understand what these frictions/resistances are
+    private float staticFriction = 0.45f;
+    [SerializeField]
+    [Tooltip("Weird friction 2")]           //TODO: Understand what these frictions/resistances are
+    private float dynamicFriction = 0.25f;
+    [SerializeField]
+    [Tooltip("Weird friction 3")]           //TODO: Understand what these frictions/resistances are
+    private float airResistance = 0.25f;
+
+    [Header("Jump & Collision Settings")]
+
+    [SerializeField]
+    [Tooltip("How much this transform is affected by gravity")]
+    private float gravityModifier = 1;
+    [SerializeField]
+    [Tooltip("How close this transform can get near other transforms")]
+    private float skinWidth = 0.03f;
+    [SerializeField]
+    [Tooltip("How near this transform needs to be to the ground to be able to jump")]
+    private float groundCheckDistance = 0.1f;
+    [SerializeField]
+    [Tooltip("How high this transform can jump")]
+    private float jumpHeight = 4;
+    [SerializeField]
+    [Tooltip("The layer that this transform will collide with")]
+    private LayerMask collisionLayer = new LayerMask();
+
+    [Header("Camera Settings")]
+
+    [SerializeField]
+    [Tooltip("How sensitive the mouse movements are, corresponding to the camera movements")]
+    private float mouseSensitivity = 0.5f;
+    [SerializeField]
+    [Tooltip("How much the camera can look up expressed in degrees")]
+    private float maximumCameraAngle = 90;
+    [SerializeField]
+    [Tooltip("How much the camera can look down expressed in degrees")]
+    private float minimumCameraAngle = -90;
+    [SerializeField]
+    [Tooltip("How far away the camera is from the player, expressed in 3-dimensional space")]
+    private Vector3 cameraOffset = new Vector3(0.0f, 0.0f, 0.0f);
+    [SerializeField]
+    [Tooltip("Acticates/ deactivates the third person camera")]
+    private bool haveThirdPersonCameraActive = true;
+    [SerializeField]
+    [Tooltip("In which direction this transform's down is, expressed in 3-dimenaional space")]
+    private Vector3 gravityVector = Vector3.down;
+    [SerializeField]
+    [Tooltip("How many times this transform can flip gravity without touching the ground")]
+    private float flipTokens = 1;
+    [Header("Non-settings")]
+    [SerializeField]
+    [Tooltip("How fast the transform moves, expressed in 3-dimenaional space")]
     private Vector3 velocity;
+
     private Vector3 direction;
     private float pushForce = 10;
 
@@ -66,9 +102,11 @@ public class Controller : MonoBehaviour
     float rotationX;
     float rotationY;
     float gravityFlipAngle;
+
     Vector3 gravity;
-    public Vector3 gravityVector = Vector3.down;
-    public float flipTokens = 1;
+
+    Vector3 point1;
+    Vector3 point2;
 
     void Awake()
     {
@@ -96,6 +134,20 @@ public class Controller : MonoBehaviour
         {
             Jump();
         }
+        point1 = transform.position + center + (-gravityVector * ((height / 2) - radius));
+        point2 = transform.position + center + (gravityVector * ((height / 2) - radius));
+
+        Vector3 interactDirection = new Vector3(playerCamera.forward.x, 0, playerCamera.forward.z);
+
+        Physics.CapsuleCast(point1, point2, radius, interactDirection.normalized, out RaycastHit forwardHit, 0.8f, collisionLayer);
+
+        Debug.Log(interactDirection.normalized + "  <---camer.forward// direction.normalised ----> " + playerCamera.forward);
+
+        if (forwardHit.collider != null)
+        {
+            Interact(forwardHit);
+            Debug.Log("forwardHit.collider is " + forwardHit.collider.name);
+        }
 
         Collision();
 
@@ -118,7 +170,6 @@ public class Controller : MonoBehaviour
         {
             Physics.Raycast(playerCamera.position, playerCamera.transform.forward, out RaycastHit rayHit, 100f, collisionLayer);
 
-
             gravityVector = -rayHit.normal;
             transform.up = rayHit.normal;
 
@@ -131,19 +182,21 @@ public class Controller : MonoBehaviour
     {
         while (true)
         {
-            Vector3 point1 = transform.position + center + (-gravityVector * ((height / 2) - radius));
-            Vector3 point2 = transform.position + center + (gravityVector * ((height / 2) - radius));
+            //Vector3 point1 = transform.position + center + (-gravityVector * ((height / 2) - radius));
+            //Vector3 point2 = transform.position + center + (gravityVector * ((height / 2) - radius));
 
             Physics.CapsuleCast(point1, point2, radius, velocity.normalized, out RaycastHit hit, float.MaxValue, collisionLayer);
 
             //TITTA
-            Physics.CapsuleCast(point1, point2, radius, playerCamera.forward.normalized, out RaycastHit forwardHit, 0.5f, collisionLayer);
-            Debug.Log(playerCamera.forward + "  <---camer.forward// direction.normalised ----> " + direction.normalized);
+            /*Vector3 interactDirection = new Vector3(playerCamera.forward.y, 0, playerCamera.forward.z);
+            Physics.CapsuleCast(point1, point2, radius, interactDirection.normalized, out RaycastHit forwardHit, 1f, collisionLayer);
+            Debug.Log(interactDirection.normalized + "  <---camer.forward// direction.normalised ----> " + direction.normalized);
+
             if (forwardHit.collider != null)
             {
                 Interact(forwardHit);
                 Debug.Log("forwardHit.collider is " + forwardHit.collider.name);
-            }
+            }*/
 
             if (hit.collider != null)
             {
@@ -243,7 +296,7 @@ public class Controller : MonoBehaviour
             //TODO: Fix camera not "sticking" to walls
             if (Physics.Raycast(transform.position, playerCamera.transform.position, float.MaxValue, collisionLayer))
             {
-                Debug.Log(cameraRelationShipVector + ", " + (transform.position - playerCamera.transform.position));
+                //Debug.Log(cameraRelationShipVector + ", " + (transform.position - playerCamera.transform.position));
             }
         }
         else
@@ -362,5 +415,10 @@ public class Controller : MonoBehaviour
     public Transform GetTransform()
     {
         return transform;
+    }
+
+    public Vector3 GetGravityVector()
+    {
+        return gravityVector;
     }
 }

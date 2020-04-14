@@ -30,6 +30,9 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField]
     private bool followPlayer = false;
 
+    [SerializeField]
+    private Vector3 playerGravityVector;
+
     //TODO: Make it so that enemy get it's down velocity from its surface and bind it to it
 
     void Awake()
@@ -40,7 +43,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     void Update()
     {
-
+        playerGravityVector = playerTransform.GetComponent<Controller>().GetGravityVector();
         Collision();
         EnemyMovement();
     }
@@ -60,7 +63,7 @@ public class EnemyBehaviour : MonoBehaviour
 
             if (isAffectedByPlayerGravity)
             {
-                velocity += playerTransform.GetComponent<Controller>().gravityVector * Time.deltaTime;
+                velocity += playerGravityVector * Time.deltaTime;
             }
 
             transform.position += velocity * Time.deltaTime;

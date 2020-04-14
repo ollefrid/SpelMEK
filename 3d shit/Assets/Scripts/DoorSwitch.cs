@@ -4,13 +4,18 @@ using UnityEngine;
 
 public class DoorSwitch : MonoBehaviour
 {
+    [Tooltip("if the switch is active or not")]
     public bool activated = false;
-    public bool connectedKey;
+    //public bool connectedKey;
+    [Tooltip("not yet implemented skip this one")]
     public GameObject[] connectedSwitchObjects;
+    [Tooltip("all the doors you want this switch to open")]
     public GameObject[] connectedDoors;
+    [Tooltip("A reference to the gameobject with the GameController script")]
     public GameObject gameController;
-    public Material activatedMaterial;
-    public Material deActivatedMaterial;
+
+    private Material activatedMaterial;
+    private Material deActivatedMaterial;
     // Start is called before the first frame update
     public bool tester = false;
     void Start()

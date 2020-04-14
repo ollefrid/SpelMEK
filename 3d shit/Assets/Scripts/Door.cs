@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
+    [Tooltip("If this door is open or not")]
     public bool open = false;
-    
     private GameObject[] doorSwitch = new GameObject[5];
     // Start is called before the first frame update
     private void Awake()

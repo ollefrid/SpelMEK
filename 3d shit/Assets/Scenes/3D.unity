@@ -852,7 +852,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 368962988}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.66, y: 4.98, z: -44.69}
+  m_LocalPosition: {x: -7.11, y: 4.98, z: -36.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1896234523}
@@ -873,28 +873,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc066546bc909d54caece1a960bdfbbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collisionLayer:
-    serializedVersion: 2
-    m_Bits: 256
   acceleration: 10
   deceleration: 4
   maxSpeed: 20
   minimumSpeedCutoff: 0.1
+  staticFriction: 0.1
+  dynamicFriction: 0.06
+  airResistance: 0.25
   gravityModifier: 12
   skinWidth: 0.1
   groundCheckDistance: 0.6
   jumpHeight: 10
-  staticFriction: 0.1
-  dynamicFriction: 0.06
-  airResistance: 0.25
+  collisionLayer:
+    serializedVersion: 2
+    m_Bits: 256
   mouseSensitivity: 2
   maximumCameraAngle: 90
   minimumCameraAngle: -90
   cameraOffset: {x: 0, y: 10, z: -10}
   haveThirdPersonCameraActive: 1
-  velocity: {x: 0, y: 0, z: 0}
   gravityVector: {x: 0, y: -1, z: 0}
   flipTokens: 1
+  velocity: {x: 0, y: 0, z: 0}
 --- !u!1001 &389203819
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1017,14 +1017,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activated: 0
-  connectedKey: 0
   connectedSwitchObjects:
   - {fileID: 1758405575}
   connectedDoors:
   - {fileID: 926569180}
   gameController: {fileID: 0}
-  activatedMaterial: {fileID: 0}
-  deActivatedMaterial: {fileID: 0}
   tester: 1
 --- !u!65 &406827197
 BoxCollider:
@@ -1364,6 +1361,7 @@ MonoBehaviour:
   dynamicFriction: 0.25
   isAffectedByPlayerGravity: 0
   followPlayer: 1
+  playerGravityVector: {x: 0, y: 0, z: 0}
 --- !u!65 &525420336
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2457,7 +2455,7 @@ PrefabInstance:
     - target: {fileID: 3260942970331375104, guid: f8e4d6b90f4707d418526694acb9741b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.9
+      value: 4.2
       objectReference: {fileID: 0}
     - target: {fileID: 3260942970331375104, guid: f8e4d6b90f4707d418526694acb9741b,
         type: 3}
@@ -2633,13 +2631,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activated: 0
-  connectedKey: 0
   connectedSwitchObjects: []
   connectedDoors:
   - {fileID: 926569180}
   gameController: {fileID: 0}
-  activatedMaterial: {fileID: 0}
-  deActivatedMaterial: {fileID: 0}
   tester: 1
 --- !u!1001 &1280593388
 PrefabInstance:
@@ -3429,14 +3424,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activated: 0
-  connectedKey: 0
   connectedSwitchObjects:
   - {fileID: 406827195}
   connectedDoors:
   - {fileID: 1785130985}
   gameController: {fileID: 0}
-  activatedMaterial: {fileID: 0}
-  deActivatedMaterial: {fileID: 0}
   tester: 1
 --- !u!65 &1758405577
 BoxCollider:
